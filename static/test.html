@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>API Test</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 1200px;
+            margin: 50px auto;
+            padding: 20px;
+        }
+        button {
+            padding: 10px 20px;
+            font-size: 16px;
+            margin: 10px;
+            cursor: pointer;
+        }
+        pre {
+            background: #f4f4f4;
+            padding: 15px;
+            border-radius: 5px;
+            overflow-x: auto;
+        }
+        .success { color: green; }
+        .error { color: red; }
+    </style>
+</head>
+<body>
+    <h1>Predictive Maintenance API Test</h1>
+    
+    <button onclick="testAPI()">Test API Endpoint</button>
+    <button onclick="window.location.href='/dashboard'">Go to Dashboard</button>
+    
+    <div id="status"></div>
+    <div id="result"></div>
+
+    <script>
+        async function testAPI() {
+            const statusDiv = document.getElementById('status');
+            const resultDiv = document.getElementById('result');
+            
+            statusDiv.innerHTML = '<p>Testing API...</p>';
+            resultDiv.innerHTML = '';
+            
+            try {
+                const response = await fetch('http://localhost:8000/simulate-and-predict');
+                
+                statusDiv.innerHTML = `<p class="success">Response Status: ${response.status} ${response.statusText}</p>`;
+                
+                const data = await response.json();
+                
+                statusDiv.innerHTML += `<p class="success">Data Type: ${Array.isArray(data) ? 'Array' : typeof data}</p>`;
+                statusDiv.innerHTML += `<p class="success">Number of machines: ${Array.isArray(data) ? data.length : 'N/A'}</p>`;
+                
+                resultDiv.innerHTML = '<h2>Response Data:</h2><pre>' + JSON.stringify(data, null, 2) + '</pre>';
+                
+            } catch (error) {
+                statusDiv.innerHTML = `<p class="error">Error: ${error.message}</p>`;
+                resultDiv.innerHTML = '<pre>' + error.stack + '</pre>';
+            }
+        }
+        
+        // Auto-test on load
+        window.addEventListener('DOMContentLoaded', testAPI);
+    </script>
+</body>
+</html>

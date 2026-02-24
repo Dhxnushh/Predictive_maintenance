@@ -1,0 +1,764 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Predictive Maintenance Dashboard</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: #0a0a0a;
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1600px;
+            margin: 0 auto;
+        }
+
+        header {
+            background: #1a1a1a;
+            border: 1px solid #333;
+            padding: 20px 30px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        h1 {
+            color: #ffffff;
+            font-size: 28px;
+            font-weight: 300;
+            letter-spacing: 1px;
+        }
+
+        .header-info {
+            display: flex;
+            gap: 30px;
+            align-items: center;
+            color: #aaa;
+        }
+
+        .status-indicator {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .status-dot {
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            background: #fff;
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.4; }
+        }
+
+        .model-info {
+            background: #1a1a1a;
+            border: 1px solid #333;
+            padding: 20px 30px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .model-details {
+            display: flex;
+            gap: 40px;
+        }
+
+        .model-item {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .model-label {
+            color: #777;
+            font-size: 11px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 5px;
+        }
+
+        .model-value {
+            color: #fff;
+            font-size: 16px;
+            font-weight: 500;
+        }
+
+        .stats-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+            margin-bottom: 20px;
+        }
+
+        .stat-card {
+            background: #1a1a1a;
+            border: 1px solid #333;
+            padding: 20px;
+            border-radius: 8px;
+        }
+
+        .stat-card h3 {
+            color: #777;
+            font-size: 11px;
+            margin-bottom: 10px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .stat-value {
+            font-size: 32px;
+            font-weight: 300;
+            color: #ffffff;
+        }
+
+        .machines-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(500px, 1fr));
+            gap: 20px;
+        }
+
+        .machine-card {
+            background: #1a1a1a;
+            border: 1px solid #333;
+            border-radius: 8px;
+            padding: 20px;
+            transition: border-color 0.3s;
+        }
+
+        .machine-card:hover {
+            border-color: #555;
+        }
+
+        .machine-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+            padding-bottom: 15px;
+            border-bottom: 1px solid #333;
+        }
+
+        .machine-id {
+            font-size: 24px;
+            font-weight: 300;
+            color: #ffffff;
+            letter-spacing: 2px;
+        }
+
+        .health-badge {
+            padding: 6px 14px;
+            border-radius: 4px;
+            font-weight: 500;
+            font-size: 11px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            border: 1px solid;
+        }
+
+        .health-healthy {
+            background: transparent;
+            color: #fff;
+            border-color: #fff;
+        }
+
+        .health-risk {
+            background: transparent;
+            color: #aaa;
+            border-color: #aaa;
+        }
+
+        .health-maintenance {
+            background: #fff;
+            color: #000;
+            border-color: #fff;
+            animation: blink 1.5s infinite;
+        }
+
+        @keyframes blink {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.6; }
+        }
+
+        .probability-display {
+            margin: 15px 0;
+            text-align: center;
+        }
+
+        .probability-value {
+            font-size: 48px;
+            font-weight: 200;
+            margin: 10px 0;
+            color: #fff;
+        }
+
+        .probability-label {
+            color: #777;
+            font-size: 12px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .progress-bar {
+            width: 100%;
+            height: 8px;
+            background: #2a2a2a;
+            border-radius: 4px;
+            overflow: hidden;
+            margin: 10px 0;
+        }
+
+        .progress-fill {
+            height: 100%;
+            transition: width 0.5s ease, background-color 0.5s ease;
+            background: #fff;
+        }
+
+        .sensors-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 10px;
+            margin-top: 15px;
+        }
+
+        .sensor-item {
+            background: #0f0f0f;
+            padding: 10px;
+            border-radius: 4px;
+            border: 1px solid #2a2a2a;
+        }
+
+        .sensor-label {
+            font-size: 10px;
+            color: #777;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .sensor-value {
+            font-size: 16px;
+            font-weight: 400;
+            color: #ffffff;
+            margin-top: 5px;
+        }
+
+        .alert-banner {
+            background: #fff;
+            color: #000;
+            padding: 12px;
+            border-radius: 4px;
+            margin-bottom: 10px;
+            display: none;
+            align-items: center;
+            gap: 10px;
+            font-weight: 500;
+            font-size: 12px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .alert-banner.active {
+            display: flex;
+        }
+
+        .alert-icon {
+            font-size: 24px;
+        }
+
+        .loading {
+            text-align: center;
+            padding: 40px;
+            color: #777;
+            font-size: 18px;
+        }
+
+        .timestamp {
+            color: #777;
+            font-size: 11px;
+        }
+
+        .control-panel {
+            background: #1a1a1a;
+            border: 1px solid #333;
+            padding: 20px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+        }
+
+        .control-buttons {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+
+        button {
+            padding: 10px 20px;
+            border: 1px solid #fff;
+            border-radius: 4px;
+            font-weight: 400;
+            cursor: pointer;
+            transition: all 0.3s;
+            background: transparent;
+            color: #fff;
+            font-size: 12px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .btn-primary {
+            background: transparent;
+            color: #fff;
+            border-color: #fff;
+        }
+
+        .btn-primary:hover {
+            background: #fff;
+            color: #000;
+        }
+
+        .btn-success {
+            background: transparent;
+            color: #aaa;
+            border-color: #aaa;
+        }
+
+        .btn-success:hover {
+            background: #aaa;
+            color: #000;
+        }
+
+        .btn-danger {
+            background: #e74c3c;
+            color: white;
+        }
+
+        .btn-danger:hover {
+            background: #c0392b;
+        }
+
+        .error-message {
+            background: #1a1a1a;
+            border: 1px solid #555;
+            color: #aaa;
+            padding: 15px;
+            border-radius: 4px;
+            margin-bottom: 20px;
+            display: none;
+        }
+
+        .error-message.active {
+            display: block;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <div>
+                <h1>🔧 Predictive Maintenance Dashboard</h1>
+                <p class="timestamp" id="lastUpdate">Last updated: --</p>
+            </div>
+            <div class="header-info">
+                <div class="status-indicator">
+                    <div class="status-dot" id="statusDot"></div>
+                    <span id="statusText">System Active</span>
+                </div>
+                <span id="currentTime"></span>
+            </div>
+        </header>
+
+        <!-- Model Information Section -->
+        <div class="model-info">
+            <div class="model-details">
+                <div class="model-item">
+                    <span class="model-label">Model</span>
+                    <span class="model-value" id="modelName">Loading...</span>
+                </div>
+                <div class="model-item">
+                    <span class="model-label">Accuracy</span>
+                    <span class="model-value" id="modelAccuracy">--</span>
+                </div>
+                <div class="model-item">
+                    <span class="model-label">F1 Score</span>
+                    <span class="model-value" id="modelF1">--</span>
+                </div>
+                <div class="model-item">
+                    <span class="model-label">ROC-AUC</span>
+                    <span class="model-value" id="modelRocAuc">--</span>
+                </div>
+            </div>
+            <div class="model-item">
+                <span class="model-label">Training Date</span>
+                <span class="model-value" id="modelDate">--</span>
+            </div>
+        </div>
+
+        <div class="error-message" id="errorMessage"></div>
+
+        <div class="control-panel">
+            <h3 style="margin-bottom: 15px; color: #fff; font-weight: 300; text-transform: uppercase; font-size: 12px; letter-spacing: 1px;">Controls</h3>
+            <div class="control-buttons">
+                <button class="btn-primary" onclick="toggleMonitoring()">
+                    <span id="monitoringBtnText">⏸ Pause Monitoring</span>
+                </button>
+                <button class="btn-success" onclick="refreshData()">🔄 Refresh Now</button>
+                <button class="btn-primary" onclick="changeUpdateInterval()">⏱ Update Interval: <span id="intervalDisplay">2s</span></button>
+            </div>
+        </div>
+
+        <div class="stats-container">
+            <div class="stat-card">
+                <h3>Total Machines</h3>
+                <div class="stat-value" id="totalMachines">-</div>
+            </div>
+            <div class="stat-card">
+                <h3>Healthy</h3>
+                <div class="stat-value" id="healthyCount">-</div>
+            </div>
+            <div class="stat-card">
+                <h3>At Risk</h3>
+                <div class="stat-value" id="riskCount">-</div>
+            </div>
+            <div class="stat-card">
+                <h3>Requires Maintenance</h3>
+                <div class="stat-value" id="maintenanceCount">-</div>
+            </div>
+        </div>
+
+        <div id="machinesContainer" class="machines-grid">
+            <div class="loading">Loading machine data...</div>
+        </div>
+    </div>
+
+    <script>
+        // Configuration - Auto-detect API base URL
+        const API_BASE_URL = window.location.origin;  // Use same origin as dashboard
+        let monitoring = true;
+        let updateInterval = 2000; // milliseconds
+        let intervalId = null;
+
+        console.log('Dashboard loaded - Version 2.0');
+        console.log('API URL:', API_BASE_URL);
+
+        // Initialize dashboard
+        document.addEventListener('DOMContentLoaded', function() {
+            console.log('DOM Content Loaded');
+            fetchModelInfo();
+            startMonitoring();
+            updateClock();
+            setInterval(updateClock, 1000);
+        });
+
+        async function fetchModelInfo() {
+            try {
+                const response = await fetch(`${API_BASE_URL}/model/info`);
+                if (response.ok) {
+                    const data = await response.json();
+                    console.log('Model info:', data);
+                    
+                    document.getElementById('modelName').textContent = data.model_type || 'XGBoost';
+                    document.getElementById('modelAccuracy').textContent = 
+                        data.metrics?.accuracy ? (data.metrics.accuracy * 100).toFixed(2) + '%' : '--';
+                    document.getElementById('modelF1').textContent = 
+                        data.metrics?.f1_score ? data.metrics.f1_score.toFixed(4) : '--';
+                    document.getElementById('modelRocAuc').textContent = 
+                        data.metrics?.roc_auc ? data.metrics.roc_auc.toFixed(4) : '--';
+                    document.getElementById('modelDate').textContent = 
+                        data.training_date ? new Date(data.training_date).toLocaleDateString() : '--';
+                }
+            } catch (error) {
+                console.error('Failed to fetch model info:', error);
+                document.getElementById('modelName').textContent = 'XGBoost';
+            }
+        }
+
+        function updateClock() {
+            const now = new Date();
+            document.getElementById('currentTime').textContent = now.toLocaleTimeString();
+        }
+
+        function startMonitoring() {
+            if (intervalId) clearInterval(intervalId);
+            
+            // Initial fetch
+            fetchAndDisplayData();
+            
+            // Set up periodic updates
+            intervalId = setInterval(() => {
+                if (monitoring) {
+                    fetchAndDisplayData();
+                }
+            }, updateInterval);
+        }
+
+        async function fetchAndDisplayData() {
+            try {
+                // Fetch data from the API
+                const response = await fetch(`${API_BASE_URL}/simulate-and-predict`);
+                
+                if (!response.ok) {
+                    console.error('API response not OK:', response.status);
+                    showError(`API Error: ${response.status} ${response.statusText}`);
+                    generateMockData();
+                    return;
+                }
+                
+                const data = await response.json();
+                console.log('Received data:', data);
+                
+                // Handle both direct array and object wrapper formats
+                let machines = data;
+                if (Array.isArray(data)) {
+                    machines = data;
+                } else if (data.value && Array.isArray(data.value)) {
+                    machines = data.value;
+                } else if (data.predictions && Array.isArray(data.predictions)) {
+                    machines = data.predictions;
+                }
+                
+                if (!Array.isArray(machines) || machines.length === 0) {
+                    console.error('No machine data found in response');
+                    showError('No machine data available');
+                    generateMockData();
+                    return;
+                }
+                
+                displayMachineData(machines);
+                hideError();
+                
+            } catch (error) {
+                console.error('Error fetching data:', error);
+                showError(`Connection error: ${error.message}`);
+                generateMockData();
+            }
+        }
+
+        function showError(message) {
+            const errorElement = document.getElementById('errorMessage');
+            if (errorElement) {
+                errorElement.textContent = message;
+                errorElement.classList.add('active');
+            }
+        }
+
+        function hideError() {
+            const errorElement = document.getElementById('errorMessage');
+            if (errorElement) {
+                errorElement.classList.remove('active');
+            }
+        }
+
+        function generateMockData() {
+            const machines = [];
+            const numMachines = 5;
+            
+            for (let i = 0; i < numMachines; i++) {
+                const machineId = `M${String(i + 1).padStart(3, '0')}`;
+                const failureProb = Math.random();
+                
+                machines.push({
+                    machine_id: machineId,
+                    prediction: failureProb > 0.6 ? 1 : 0,
+                    failure_probability: failureProb,
+                    normal_probability: 1 - failureProb,
+                    health_status: getHealthStatus(failureProb),
+                    alert: failureProb >= 0.6,
+                    sensor_data: {
+                        'Type': ['L', 'M', 'H'][Math.floor(Math.random() * 3)],
+                        'Air temperature [K]': (295 + Math.random() * 9).toFixed(1),
+                        'Process temperature [K]': (305 + Math.random() * 8).toFixed(1),
+                        'Rotational speed [rpm]': Math.floor(1200 + Math.random() * 1300),
+                        'Torque [Nm]': (15 + Math.random() * 55).toFixed(1),
+                        'Tool wear [min]': Math.floor(Math.random() * 250)
+                    }
+                });
+            }
+            
+            displayMachineData(machines);
+        }
+
+        function getHealthStatus(probability) {
+            if (probability < 0.3) return 'HEALTHY';
+            if (probability < 0.6) return 'RISK';
+            return 'MAINTENANCE REQUIRED';
+        }
+
+        function displayMachineData(machines) {
+            console.log('displayMachineData called with:', machines);
+            const container = document.getElementById('machinesContainer');
+            console.log('Container element:', container);
+            
+            if (!container) {
+                console.error('machinesContainer element not found!');
+                return;
+            }
+            
+            if (!Array.isArray(machines)) {
+                console.error('machines is not an array:', typeof machines);
+                return;
+            }
+            
+            console.log('Number of machines:', machines.length);
+            
+            // Update statistics
+            updateStatistics(machines);
+            
+            // Clear container
+            container.innerHTML = '';
+            
+            // Sort machines by failure probability (highest first)
+            machines.sort((a, b) => b.failure_probability - a.failure_probability);
+            
+            console.log('Creating machine cards...');
+            // Display each machine
+            machines.forEach((machine, index) => {
+                console.log(`Creating card ${index + 1} for:`, machine.machine_id);
+                const card = createMachineCard(machine);
+                container.appendChild(card);
+            });
+            
+            console.log('All cards created');
+            
+            // Update timestamp
+            document.getElementById('lastUpdate').textContent = 
+                `Last updated: ${new Date().toLocaleTimeString()}`;
+        }
+
+        function updateStatistics(machines) {
+            document.getElementById('totalMachines').textContent = machines.length;
+            
+            let healthy = 0, risk = 0, maintenance = 0;
+            
+            machines.forEach(machine => {
+                const status = machine.health_status.toUpperCase();
+                if (status === 'HEALTHY') healthy++;
+                else if (status === 'RISK') risk++;
+                else maintenance++;
+            });
+            
+            document.getElementById('healthyCount').textContent = healthy;
+            document.getElementById('riskCount').textContent = risk;
+            document.getElementById('maintenanceCount').textContent = maintenance;
+        }
+
+        function createMachineCard(machine) {
+            const card = document.createElement('div');
+            card.className = 'machine-card';
+            
+            const statusClass = getHealthStatusClass(machine.health_status);
+            const probability = (machine.failure_probability * 100).toFixed(1);
+            const progressColor = getProgressColor(machine.failure_probability);
+            
+            card.innerHTML = `
+                ${machine.alert ? '<div class="alert-banner active"><span class="alert-icon">⚠️</span><strong>MAINTENANCE REQUIRED</strong></div>' : ''}
+                
+                <div class="machine-header">
+                    <div class="machine-id">${machine.machine_id}</div>
+                    <div class="health-badge ${statusClass}">${machine.health_status}</div>
+                </div>
+                
+                <div class="probability-display">
+                    <div class="probability-label">Failure Probability</div>
+                    <div class="probability-value" style="color: ${progressColor};">${probability}%</div>
+                    <div class="progress-bar">
+                        <div class="progress-fill" style="width: ${probability}%; background-color: ${progressColor};">
+                            ${probability}%
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="sensors-grid">
+                    <div class="sensor-item">
+                        <div class="sensor-label">Type</div>
+                        <div class="sensor-value">${machine.sensor_data.Type}</div>
+                    </div>
+                    <div class="sensor-item">
+                        <div class="sensor-label">Air Temp</div>
+                        <div class="sensor-value">${machine.sensor_data['Air temperature [K]']} K</div>
+                    </div>
+                    <div class="sensor-item">
+                        <div class="sensor-label">Process Temp</div>
+                        <div class="sensor-value">${machine.sensor_data['Process temperature [K]']} K</div>
+                    </div>
+                    <div class="sensor-item">
+                        <div class="sensor-label">Rotational Speed</div>
+                        <div class="sensor-value">${machine.sensor_data['Rotational speed [rpm]']} rpm</div>
+                    </div>
+                    <div class="sensor-item">
+                        <div class="sensor-label">Torque</div>
+                        <div class="sensor-value">${machine.sensor_data['Torque [Nm]']} Nm</div>
+                    </div>
+                    <div class="sensor-item">
+                        <div class="sensor-label">Tool Wear</div>
+                        <div class="sensor-value">${machine.sensor_data['Tool wear [min]']} min</div>
+                    </div>
+                </div>
+            `;
+            
+            return card;
+        }
+
+        function getHealthStatusClass(status) {
+            const statusUpper = status.toUpperCase();
+            if (statusUpper === 'HEALTHY') return 'health-healthy';
+            if (statusUpper === 'RISK') return 'health-risk';
+            return 'health-maintenance';
+        }
+
+        function getProgressColor(probability) {
+            return '#fff';  // White for minimal theme
+        }
+
+        function toggleMonitoring() {
+            monitoring = !monitoring;
+            const btn = document.getElementById('monitoringBtnText');
+            const statusDot = document.getElementById('statusDot');
+            const statusText = document.getElementById('statusText');
+            
+            if (monitoring) {
+                btn.textContent = '⏸ Pause Monitoring';
+                statusDot.style.background = '#fff';
+                statusText.textContent = 'System Active';
+            } else {
+                btn.textContent = '▶ Resume Monitoring';
+                statusDot.style.background = '#666';
+                statusText.textContent = 'System Paused';
+            }
+        }
+
+        function refreshData() {
+            fetchAndDisplayData();
+        }
+
+        function changeUpdateInterval() {
+            const intervals = [1000, 2000, 5000, 10000];
+            const currentIndex = intervals.indexOf(updateInterval);
+            const nextIndex = (currentIndex + 1) % intervals.length;
+            updateInterval = intervals[nextIndex];
+            
+            document.getElementById('intervalDisplay').textContent = `${updateInterval / 1000}s`;
+            
+            // Restart monitoring with new interval
+            startMonitoring();
+        }
+    </script>
+</body>
+</html>

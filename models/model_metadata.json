@@ -1,0 +1,22 @@
+{
+    "model_name": "xgboost",
+    "feature_columns": [
+        "Air_temperature_K",
+        "Process_temperature_K",
+        "Rotational_speed_rpm",
+        "Torque_Nm",
+        "Tool_wear_min",
+        "Type_encoded",
+        "Temp_diff",
+        "Power"
+    ],
+    "metrics": {
+        "accuracy": 0.975,
+        "precision": 0.5978260869565217,
+        "recall": 0.8088235294117647,
+        "f1_score": 0.6875,
+        "roc_auc": 0.9754825843380831
+    },
+    "training_date": "2026-02-24 22:45:56",
+    "random_state": 42
+}
