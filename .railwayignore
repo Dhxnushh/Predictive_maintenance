@@ -1,0 +1,23 @@
+# Railway Ignore File
+# Similar to .gitignore but for Railway deployments
+
+# Keep models (don't ignore)
+!models/
+!models/*.pkl
+!models/*.json
+
+# Ignore development files
+.venv/
+venv/
+__pycache__/
+*.pyc
+.vscode/
+.idea/
+.git/
+
+# Ignore local logs
+logs/*.log
+
+# Ignore test files
+tests/
+*.test.py

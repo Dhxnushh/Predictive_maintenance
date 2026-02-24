@@ -158,6 +158,49 @@ Predictive_maintenance/
 - Push the updated code to trigger a rebuild
 - Railway will use nixpacks with Python 3.11
 
+**Error: 502 Bad Gateway**
+This means the app deployed but isn't starting correctly.
+
+**Troubleshooting Steps:**
+1. **Check Railway Logs**: 
+   - Go to your service → "Deployments" → Click on latest deployment
+   - Look for errors in the build and deploy logs
+
+2. **Common Causes:**
+   - **Models not deployed**: Ensure `models/` directory is in git
+     ```bash
+     git add models/
+     git commit -m "Add trained models"
+     git push
+     ```
+   
+   - **Port binding issue**: Railway auto-sets `$PORT` environment variable
+     - The app uses `config.API_PORT = int(os.getenv('PORT', 8000))`
+     - No manual configuration needed
+   
+   - **Startup crash**: Check if all dependencies are in `requirements.txt`
+   
+3. **Debug locally with Railway environment:**
+   ```bash
+   export PORT=8000
+   export ENV=production
+   python app.py
+   ```
+
+4. **Switch to Dockerfile** (if nixpacks fails):
+   - Railway Settings → Builder → Select "Dockerfile"
+   - Redeploy
+
+5. **View detailed logs:**
+   ```bash
+   railway logs
+   ```
+
+**Quick Fix: Deploy with Dockerfile**
+In Railway dashboard:
+- Settings → Builder → Change to "Dockerfile"
+- Click "Redeploy"
+
 **Error: "Port already in use"**
 - Railway automatically sets `$PORT` environment variable
 - The app uses `os.getenv('PORT', 8000)` to detect the port

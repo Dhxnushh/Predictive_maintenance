@@ -95,9 +95,34 @@ monitoring_service = None
 async def startup_event():
     """Initialize model and monitoring service on startup"""
     global model_inference, monitoring_service
-    model_inference = get_model_inference()
-    monitoring_service = get_monitoring_service()  # This initializes the simulator
-    print("✓ Predictive Maintenance API started successfully")
+    try:
+        print("🚀 Starting Predictive Maintenance API...")
+        print(f"📍 Environment: {config.ENV}")
+        print(f"🔌 Port: {config.API_PORT}")
+        
+        # Load model with error handling
+        try:
+            model_inference = get_model_inference()
+            print("✓ Model loaded successfully")
+        except Exception as model_error:
+            print(f"⚠️  Warning: Model loading failed: {model_error}")
+            print("⚠️  API will run in limited mode without predictions")
+            model_inference = None
+        
+        # Initialize monitoring service
+        try:
+            monitoring_service = get_monitoring_service()
+            print("✓ Monitoring service initialized")
+        except Exception as monitor_error:
+            print(f"⚠️  Warning: Monitoring service failed: {monitor_error}")
+            monitoring_service = None
+        
+        print("✓ Predictive Maintenance API started successfully")
+    except Exception as e:
+        print(f"❌ Startup error: {e}")
+        import traceback
+        traceback.print_exc()
+        # Don't raise - let the app start anyway for health checks
 
 
 @app.get("/", response_class=HTMLResponse)
@@ -257,13 +282,27 @@ async def dashboard():
 
 
 if __name__ == "__main__":
-    print("Starting Predictive Maintenance API server...")
-    print(f"API will be available at http://{config.API_HOST}:{config.API_PORT}")
-    print(f"Interactive docs at http://{config.API_HOST}:{config.API_PORT}/docs")
+    import sys
+    print("=" * 50)
+    print("🔧 Predictive Maintenance API")
+    print("=" * 50)
+    print(f"Python Version: {sys.version}")
+    print(f"Host: {config.API_HOST}")
+    print(f"Port: {config.API_PORT}")
+    print(f"Environment: {config.ENV}")
+    print(f"Debug Mode: {config.DEBUG}")
+    print("=" * 50)
     
-    uvicorn.run(
-        app,
-        host=config.API_HOST,
-        port=config.API_PORT,
-        log_level="info"
-    )
+    try:
+        uvicorn.run(
+            app,
+            host=config.API_HOST,
+            port=config.API_PORT,
+            log_level="info",
+            access_log=True
+        )
+    except Exception as e:
+        print(f"❌ Failed to start server: {e}")
+        import traceback
+        traceback.print_exc()
+        sys.exit(1)
