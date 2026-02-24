@@ -25,7 +25,14 @@ heroku open
 1. Go to [Railway.app](https://railway.app)
 2. Click "New Project" → "Deploy from GitHub repo"
 3. Select this repository
-4. Railway will auto-deploy
+4. Railway will auto-deploy using `nixpacks.toml` configuration
+
+**Note**: Railway uses Nixpacks builder which is configured via `nixpacks.toml`
+
+**If build fails:**
+- Ensure `nixpacks.toml` and `railway.toml` are in the root directory
+- Check Railway logs for specific errors
+- Python 3.11 is automatically configured
 
 ---
 
@@ -142,7 +149,44 @@ Predictive_maintenance/
 
 ---
 
-## 🛠️ **Technology Stack**
+## � **Troubleshooting**
+
+### Railway Build Errors
+
+**Error: "mise install failed"**
+- ✅ **Fixed**: Use the provided `nixpacks.toml` configuration
+- Push the updated code to trigger a rebuild
+- Railway will use nixpacks with Python 3.11
+
+**Error: "Port already in use"**
+- Railway automatically sets `$PORT` environment variable
+- The app uses `os.getenv('PORT', 8000)` to detect the port
+- No manual configuration needed
+
+**Error: "Module not found"**
+- Ensure `requirements.txt` is in the root directory
+- Check Railway build logs: Settings → Deployments → View Logs
+- Verify all dependencies are listed
+
+### General Deployment Issues
+
+**Dashboard shows "Loading..."**
+- Check if the API is running: Visit `/health` endpoint
+- Open browser console (F12) for JavaScript errors
+- Verify API_BASE_URL is using `window.location.origin`
+
+**Model not loading**
+- Ensure `models/` directory exists in repository
+- Check that `xgboost.pkl` and `model_metadata.json` are committed
+- Large files (>100MB) may need Git LFS
+
+**CORS errors**
+- The app allows all origins by default
+- If needed, update CORS settings in `app.py`
+
+---
+
+## �🛠️ **Technology Stack**
 
 - **Backend**: FastAPI, Python 3.11
 - **ML**: XGBoost, Scikit-learn, Pandas, NumPy
