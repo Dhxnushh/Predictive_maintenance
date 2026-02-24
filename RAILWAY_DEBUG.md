@@ -1,5 +1,28 @@
 # 🚂 Railway Deployment Quick Guide
 
+## ✅ Fixed: PORT Variable Issue
+
+**Problem:** `'$PORT' is not a valid integer`  
+**Solution:** Using startup script that properly handles environment variables
+
+## 🔧 Start Commands (All Fixed)
+
+The app now uses `start.sh` which properly handles the PORT variable:
+
+**Option 1: Shell Script (Default)**
+```bash
+./start.sh
+```
+
+**Option 2: Python Entrypoint (Fallback)**
+```bash
+python entrypoint.py
+```
+
+Both methods correctly read the `$PORT` environment variable.
+
+---
+
 ## Current Issue: 502 Bad Gateway
 
 The app built successfully but isn't responding. Here's how to fix it:

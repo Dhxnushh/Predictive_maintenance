@@ -1,0 +1,4 @@
+# Alternative Procfile using Python entrypoint
+# Use this if start.sh has permission issues
+
+web: python entrypoint.py
